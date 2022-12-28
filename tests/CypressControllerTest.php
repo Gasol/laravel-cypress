@@ -228,4 +228,12 @@ class CypressControllerTest extends TestCase
 
         $this->assertEquals(5, $response->json()['result']);
     }
+
+    /** @test */
+    public function it_fetches_the_csrf_token()
+    {
+        $response = $this->get(route('cypress.csrf-token'));
+
+        $this->assertEquals(csrf_token(), $response->json());
+    }
 }
