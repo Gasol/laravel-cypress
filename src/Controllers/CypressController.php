@@ -59,7 +59,11 @@ class CypressController
 
     public function currentUser()
     {
-        return auth()->user()?->setHidden([])->setVisible([]);
+        $user = auth()->user();
+        if ($user) {
+            $user->setHidden([])->setVisible([]);
+        }
+        return $user;
     }
 
     public function logout()
@@ -73,9 +77,11 @@ class CypressController
             $request->input('model'),
             $request->input('state', [])
         )
-            ->count(intval($request->input('count', 1)))
-            ->create($request->input('attributes'))
-            ->each(fn($model) => $model->setHidden([])->setVisible([]))
+            ->times(intval($request->input('count', 1)))
+            ->create($request->input('attributes') ?? [])
+            ->each(function ($model) {
+                return $model->setHidden([])->setVisible([]);
+            })
             ->load($request->input('load', []))
             ->pipe(function ($collection) {
                 return $collection->count() > 1
@@ -121,20 +127,9 @@ class CypressController
 
     protected function factoryBuilder($model, $states = [])
     {
-        $factory = $model::factory();
-
+        $factory = factory($model);
         $states = Arr::wrap($states);
-
-        foreach ($states as $state => $attributes) {
-            if (is_int($state)) {
-                $state = $attributes;
-                $attributes = [];
-            }
-
-            $attributes = Arr::wrap($attributes);
-
-            $factory = $factory->{$state}(...$attributes);
-        }
+        $factory->states($states);
 
         return $factory;
     }

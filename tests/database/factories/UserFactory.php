@@ -1,8 +1,6 @@
 <?php
 
-namespace Laracasts\Cypress\Tests\Database\Factories;
-
-use Illuminate\Database\Eloquent\Factories\Factory;
+use Faker\Generator as Faker;
 use Laracasts\Cypress\Tests\Support\TestUser;
 
 /*
@@ -16,32 +14,14 @@ use Laracasts\Cypress\Tests\Support\TestUser;
 |
 */
 
-class UserFactory extends Factory
-{
-    /**
-     * The name of the factory's corresponding model.
-     *
-     * @var string
-     */
-    protected $model = TestUser::class;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array
-     */
-    public function definition()
-    {
-        return [
-            'name' => $this->faker->name(),
-            'email' => $this->faker->unique()->safeEmail(),
-            'plan' => 'monthly',
-            'password' => 'foopassword',
-        ];
-    }
+$factory->define(TestUser::class, function (Faker $faker) {
+    return [
+        'name' => $faker->name(),
+        'email' => $faker->unique()->safeEmail(),
+        'plan' => 'monthly',
+        'password' => 'foopassword',
+    ];
+});
 
-    public function guest($plan = 'guest')
-    {
-        return $this->state(fn() => ['plan' => $plan]);
-    }
-}
+$factory->state(TestUser::class, 'guest', ['plan' => 'guest']);

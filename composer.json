@@ -17,11 +17,11 @@
     ],
     "require": {
         "php": "^7.1",
-        "illuminate/support": "^5.0|^6.0|^7.0|^8.0|^9.0"
+        "illuminate/support": "^5.0"
     },
     "require-dev": {
         "orchestra/testbench": "^3.0|^6.0|^7.0",
-        "phpunit/phpunit": "^8.0|^9.5.10"
+        "phpunit/phpunit": "^7.5|^8.0|^9.5.10"
     },
     "autoload": {
         "psr-4": {
@@ -29,6 +29,9 @@
         }
     },
     "autoload-dev": {
+        "classmap": [
+            "tests/database/factories"
+        ],
         "psr-4": {
             "Laracasts\\Cypress\\Tests\\": "tests"
         }

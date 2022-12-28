@@ -21,14 +21,17 @@ class CypressBoilerplateCommand extends Command
     /**
      * The path to the user's desired cypress install.
      */
-    protected string $cypressPath;
+    protected $cypressPath;
+
+    protected $files;
 
     /**
      * Create a new Artisan command instance.
      */
-    public function __construct(protected Filesystem $files)
+    public function __construct(Filesystem $files)
     {
         parent::__construct();
+        $this->files = $files;
     }
 
     /**

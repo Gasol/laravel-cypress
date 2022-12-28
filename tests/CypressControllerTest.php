@@ -7,13 +7,12 @@ use Illuminate\Support\Facades\Route;
 use Laracasts\Cypress\CypressServiceProvider;
 use Laracasts\Cypress\Tests\Support\TestUser;
 use Orchestra\Testbench\TestCase;
-use Spatie\LaravelRay\RayServiceProvider;
 
 class CypressControllerTest extends TestCase
 {
-    protected function getPackageProviders($app)
+    protected function getPackageProviders($app): array
     {
-        return [CypressServiceProvider::class, RayServiceProvider::class];
+        return [CypressServiceProvider::class];
     }
 
     protected function setUp(): void
@@ -21,6 +20,7 @@ class CypressControllerTest extends TestCase
         parent::setUp();
 
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
+        $this->withFactories(__DIR__ . '/database/factories');
 
         config(['auth.providers.users.model' => TestUser::class]);
     }
@@ -88,9 +88,10 @@ class CypressControllerTest extends TestCase
     /** @test */
     public function it_logs_an_existing_user_in()
     {
-        TestUser::factory()->create(['name' => 'Joe']);
+        $factory = factory(TestUser::class);
+        $factory->create(['name' => 'Joe']);
 
-        $frank = TestUser::factory()->create([
+        $frank = $factory->create([
             'name' => 'Frank',
             'plan' => 'monthly',
         ]);
@@ -136,16 +137,10 @@ class CypressControllerTest extends TestCase
     {
         $response = $this->post(route('cypress.factory'), [
             'model' => TestUser::class,
-            'state' => ['guest' => 'forum']
+            'attributes' => ['plan' => 'forum']
         ]);
 
         $this->assertEquals('forum', $response->json()['plan']);
-
-        // When passing an array of arguments.
-        $response = $this->post(route('cypress.factory'), [
-            'model' => TestUser::class,
-            'state' => ['guest' => ['forum']]
-        ]);
 
         $this->assertEquals('forum', $response->json()['plan']);
     }

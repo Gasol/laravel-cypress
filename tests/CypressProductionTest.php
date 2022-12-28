@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Laracasts\Cypress\CypressServiceProvider;
 use Orchestra\Testbench\TestCase;
 
-class CypressTest extends TestCase
+class CypressProductionTest extends TestCase
 {
     protected function getPackageProviders($app)
     {
@@ -16,13 +16,13 @@ class CypressTest extends TestCase
     /**
      * @test
      */
-    public function it_exposes_cypress_routes_if_not_in_production()
+    public function it_does_not_expose_cypress_routes_in_production()
     {
+        $this->app = $this->createApplication();
         $this->routeNames()->each(function ($name) {
-            $this->assertTrue(Route::has($name));
+            $this->assertFalse(Route::has($name));
         });
     }
-
     protected function routeNames()
     {
         return collect([
@@ -35,5 +35,13 @@ class CypressTest extends TestCase
             'cypress.routes',
             'cypress.current-user'
         ]);
+    }
+
+    protected function getEnvironmentSetUp($app)
+    {
+        parent::getEnvironmentSetUp($app);
+        $app->detectEnvironment(function () {
+            return 'production';
+        });
     }
 }
