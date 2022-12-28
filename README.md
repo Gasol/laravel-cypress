@@ -1,4 +1,7 @@
-# Laravel + Cypress Integration
+# Laravel 5 + Cypress Integration
+
+> This branch provides support for legacy Laravel 5.5 and laters. It doesn't support earlier versions for some reasons. PR are welcome.
+> Factory States doesn't support attributes in Laravel 5.
 
 This package provides the necessary boilerplate to quickly begin testing your Laravel applications using Cypress.
 
