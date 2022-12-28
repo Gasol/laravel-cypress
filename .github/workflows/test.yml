@@ -1,0 +1,47 @@
+name: Run tests
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  laravel-tests:
+
+    runs-on: ubuntu-22.04
+
+    strategy:
+      matrix:
+        php-version: [7.1, 7.2, 7.3, 7.4]
+        laravel-version: [5.5, 5.6, 5.7, 5.8]
+
+    name: Run tests on Laravel ${{ matrix.laravel-version}} in PHP ${{ matrix.php-version }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup PHP with Composer
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: bcmath, ctype, json, mbstring, openssl, pdo, pdo_sqlite, tokenizer, xml
+          coverage: xdebug
+          tools: composer:v2
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ matrix.laravel-version }}-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-${{ matrix.laravel-version }}-
+
+      - name: Install dependencies
+        run: |
+          composer update --no-progress --root-reqs --prefer-dist -W laravel/framework:${{ matrix.laravel-version }}.* 'orchestra/*'
+          composer show | grep laravel
+
+      - name: Run tests
+        run: make test
