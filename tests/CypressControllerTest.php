@@ -6,13 +6,18 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Laracasts\Cypress\CypressServiceProvider;
 use Laracasts\Cypress\Tests\Support\TestUser;
+use Orchestra\Database\ConsoleServiceProvider;
 use Orchestra\Testbench\TestCase;
 
 class CypressControllerTest extends TestCase
 {
     protected function getPackageProviders($app): array
     {
-        return [CypressServiceProvider::class];
+        $providers = [CypressServiceProvider::class];
+        if (class_exists('Orchestra\Database\ConsoleServiceProvider')) {
+            $providers[] = ConsoleServiceProvider::class;
+        }
+        return $providers;
     }
 
     protected function setUp(): void
